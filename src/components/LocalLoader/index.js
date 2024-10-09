@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   ${(props) =>
     props.fill && !props.height
       ? css`
-          height: 100vh;
+          height: calc(100vh - 48px);
         `
       : css`
           height: 180px;

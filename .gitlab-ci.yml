@@ -1,0 +1,35 @@
+deploy PRO:
+  stage: deploy
+  only: 
+    - cido-demo
+  image: nikolaik/python-nodejs
+  script:
+    - echo "Installing aws command line"
+    - pip install awscli
+    - aws --version
+    - npm --version
+    - export NODE_OPTIONS=--openssl-legacy-provider
+    - echo "Installing npm dependencies"
+    - npm i
+    - echo "Extracting the production build"
+    - npm run build
+    - echo "Uploading files to AWS Bucket"
+    - aws s3 cp --recursive build/ s3://$PROD_S3_BUCKET
+
+deploy DEV:
+  stage: deploy
+  only: 
+    - cido-demo-dev
+  image: nikolaik/python-nodejs
+  script:
+    - echo "Installing aws command line"
+    - pip install awscli
+    - aws --version
+    - npm --version
+    - export NODE_OPTIONS=--openssl-legacy-provider
+    - echo "Installing npm dependencies"
+    - npm i
+    - echo "Extracting the production build"
+    - npm run build
+    - echo "Uploading files to AWS Bucket"
+    - aws s3 cp --recursive build/ s3://$DEVELOP_S3_BUCKET

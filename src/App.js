@@ -109,33 +109,25 @@ const LayoutWrapper = ({ children, savedOpen, setSavedOpen }) => {
   )
 }
 
-const BLOCK_DIFFERENCE_THRESHOLD = 30
+//const BLOCK_DIFFERENCE_THRESHOLD = 30
 
 function App() {
   const [savedOpen, setSavedOpen] = useState(false)
 
   const globalData = useGlobalData()
   const globalChartData = useGlobalChartData()
-  const [latestBlock, headBlock] = useLatestBlocks()
+  const [latestBlock] = useLatestBlocks()
 
   // show warning
-  const showWarning = headBlock && latestBlock ? headBlock - latestBlock > BLOCK_DIFFERENCE_THRESHOLD : false
+  const showWarning = false //!isSynced;
 
   return (
     <ApolloProvider client={client}>
       <AppWrapper>
-        <BannerWrapper>
-          <UrlBanner>
-            {`info.uniswap.org is being deprecated on June 11th. Explore the new combined V2 and V3 analytics at `}
-            <Link color="white" external href={'https://app.uniswap.org/explore'}>
-              <Decorator>app.uniswap.org</Decorator>
-            </Link>{' '}
-          </UrlBanner>
-        </BannerWrapper>
         {showWarning && (
           <BannerWrapper>
             <WarningBanner>
-              {`Warning: The data on this site has only synced to Ethereum block ${latestBlock} (out of ${headBlock}). Please check back soon.`}
+              {`Warning: The data on this site has only synced to Ethereum block ${latestBlock}. Please check back soon.`}
             </WarningBanner>
           </BannerWrapper>
         )}

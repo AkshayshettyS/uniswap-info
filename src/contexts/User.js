@@ -400,7 +400,7 @@ export function useUserLiquidityChart(account) {
         const relavantDayDatas = Object.keys(ownershipPerPair).map((pairAddress) => {
           // find last day data after timestamp update
           const dayDatasForThisPair = pairDayDatas.filter((dayData) => {
-            return dayData.pairAddress === pairAddress
+            return dayData.pair.id === pairAddress
           })
           // find the most recent reference to pair liquidity data
           let mostRecent = dayDatasForThisPair[0]

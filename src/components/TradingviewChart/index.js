@@ -47,6 +47,7 @@ const TradingViewChart = ({
       let node = document.getElementById('test-id' + type)
       node.removeChild(tooltip)
       chartCreated.resize(0, 0)
+      chartCreated.remove()
       setChartCreated()
     }
   }, [chartCreated, data, dataPrev, type])
@@ -74,6 +75,7 @@ const TradingViewChart = ({
       let node = document.getElementById('test-id' + type)
       node.removeChild(tooltip)
       chartCreated.resize(0, 0)
+      chartCreated.remove()
       setChartCreated()
     }
   }, [chartCreated, darkMode, previousTheme, type])

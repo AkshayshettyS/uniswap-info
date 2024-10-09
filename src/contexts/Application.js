@@ -12,14 +12,14 @@ const UPDATE_TIMEFRAME = 'UPDATE_TIMEFRAME'
 const UPDATE_SESSION_START = 'UPDATE_SESSION_START'
 const UPDATED_SUPPORTED_TOKENS = 'UPDATED_SUPPORTED_TOKENS'
 const UPDATE_LATEST_BLOCK = 'UPDATE_LATEST_BLOCK'
-const UPDATE_HEAD_BLOCK = 'UPDATE_HEAD_BLOCK'
+const UPDATE_IS_SYNCED = 'UPDATE_IS_SYNCED'
 
 const SUPPORTED_TOKENS = 'SUPPORTED_TOKENS'
 const TIME_KEY = 'TIME_KEY'
 const CURRENCY = 'CURRENCY'
 const SESSION_START = 'SESSION_START'
 const LATEST_BLOCK = 'LATEST_BLOCK'
-const HEAD_BLOCK = 'HEAD_BLOCK'
+const IS_SYNCED = 'IS_SYNCED'
 
 const ApplicationContext = createContext()
 
@@ -59,11 +59,11 @@ function reducer(state, { type, payload }) {
       }
     }
 
-    case UPDATE_HEAD_BLOCK: {
-      const { block } = payload
+    case UPDATE_IS_SYNCED: {
+      const { synced } = payload
       return {
         ...state,
-        [HEAD_BLOCK]: block,
+        [IS_SYNCED]: synced,
       }
     }
 
@@ -135,11 +135,11 @@ export default function Provider({ children }) {
     })
   }, [])
 
-  const updateHeadBlock = useCallback((block) => {
+  const updateIsSynced = useCallback((is_synced) => {
     dispatch({
-      type: UPDATE_HEAD_BLOCK,
+      type: UPDATE_IS_SYNCED,
       payload: {
-        block,
+        is_synced,
       },
     })
   }, [])
@@ -155,10 +155,10 @@ export default function Provider({ children }) {
             updateTimeframe,
             updateSupportedTokens,
             updateLatestBlock,
-            updateHeadBlock,
+            updateIsSynced,
           },
         ],
-        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateHeadBlock]
+        [state, update, updateTimeframe, updateSessionStart, updateSupportedTokens, updateLatestBlock, updateIsSynced]
       )}
     >
       {children}
@@ -167,10 +167,10 @@ export default function Provider({ children }) {
 }
 
 export function useLatestBlocks() {
-  const [state, { updateLatestBlock, updateHeadBlock }] = useApplicationContext()
+  const [state, { updateLatestBlock, updateIsSynced }] = useApplicationContext()
 
   const latestBlock = state?.[LATEST_BLOCK]
-  const headBlock = state?.[HEAD_BLOCK]
+  const isSynced = state?.[IS_SYNCED]
 
   useEffect(() => {
     async function fetch() {
@@ -179,11 +179,11 @@ export function useLatestBlocks() {
           query: SUBGRAPH_HEALTH,
         })
         .then((res) => {
-          const syncedBlock = res.data.indexingStatusForCurrentVersion.chains[0].latestBlock.number
-          const headBlock = res.data.indexingStatusForCurrentVersion.chains[0].chainHeadBlock.number
-          if (syncedBlock && headBlock) {
+          const syncedBlock = res.data._meta.syncBlock
+          const isSynced = res.data._meta.synced
+          if (syncedBlock && isSynced) {
             updateLatestBlock(syncedBlock)
-            updateHeadBlock(headBlock)
+            updateIsSynced(isSynced)
           }
         })
         .catch((e) => {
@@ -193,9 +193,9 @@ export function useLatestBlocks() {
     if (!latestBlock) {
       fetch()
     }
-  }, [latestBlock, updateHeadBlock, updateLatestBlock])
+  }, [latestBlock, updateIsSynced, updateLatestBlock])
 
-  return [latestBlock, headBlock]
+  return [latestBlock, isSynced]
 }
 
 export function useCurrentCurrency() {

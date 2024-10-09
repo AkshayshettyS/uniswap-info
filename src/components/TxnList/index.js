@@ -161,6 +161,10 @@ function getTransactionType(event, symbol0, symbol1) {
   }
 }
 
+const UNKNOWN_TOKEN = {
+  symbol: 'Unknown',
+}
+
 // @TODO rework into virtualized list
 function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
   // page state
@@ -193,8 +197,16 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.token0Amount = mint.amount0
           newTxn.token1Amount = mint.amount1
           newTxn.account = mint.to
-          newTxn.token0Symbol = updateNameData(mint.pair).token0.symbol
-          newTxn.token1Symbol = updateNameData(mint.pair).token1.symbol
+
+          let { token0, token1 } = updateNameData(mint.pair)
+
+          if (!token0 || !token1) {
+            token0 = UNKNOWN_TOKEN
+            token1 = UNKNOWN_TOKEN
+          }
+
+          newTxn.token0Symbol = token0.symbol
+          newTxn.token1Symbol = token1.symbol
           newTxn.amountUSD = mint.amountUSD
           return newTxns.push(newTxn)
         })
@@ -208,8 +220,16 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
           newTxn.token0Amount = burn.amount0
           newTxn.token1Amount = burn.amount1
           newTxn.account = burn.sender
-          newTxn.token0Symbol = updateNameData(burn.pair).token0.symbol
-          newTxn.token1Symbol = updateNameData(burn.pair).token1.symbol
+
+          let { token0, token1 } = updateNameData(burn.pair)
+
+          if (!token0 || !token1) {
+            token0 = UNKNOWN_TOKEN
+            token1 = UNKNOWN_TOKEN
+          }
+
+          newTxn.token0Symbol = token0.symbol
+          newTxn.token1Symbol = token1.symbol
           newTxn.amountUSD = burn.amountUSD
           return newTxns.push(newTxn)
         })
@@ -221,14 +241,21 @@ function TxnList({ transactions, symbol0Override, symbol1Override, color }) {
 
           let newTxn = {}
 
+          let { token0, token1 } = updateNameData(swap.pair)
+
+          if (!token0 || !token1) {
+            token0 = UNKNOWN_TOKEN
+            token1 = UNKNOWN_TOKEN
+          }
+
           if (netToken0 < 0) {
-            newTxn.token0Symbol = updateNameData(swap.pair).token0.symbol
-            newTxn.token1Symbol = updateNameData(swap.pair).token1.symbol
+            newTxn.token0Symbol = token0.symbol
+            newTxn.token1Symbol = token1.symbol
             newTxn.token0Amount = Math.abs(netToken0)
             newTxn.token1Amount = Math.abs(netToken1)
           } else if (netToken1 < 0) {
-            newTxn.token0Symbol = updateNameData(swap.pair).token1.symbol
-            newTxn.token1Symbol = updateNameData(swap.pair).token0.symbol
+            newTxn.token0Symbol = token1.symbol
+            newTxn.token1Symbol = token0.symbol
             newTxn.token0Amount = Math.abs(netToken1)
             newTxn.token1Amount = Math.abs(netToken0)
           }

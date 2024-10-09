@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { ethers } from 'ethers'
 import utc from 'dayjs/plugin/utc'
 import { client, blockClient } from '../apollo/client'
-import { GET_BLOCK, GET_BLOCKS, SHARE_VALUE } from '../apollo/queries'
+import { GET_BLOCK, GET_BLOCKS, SHARE_VALUE, GET_META_BLOCK, GET_TIMESTAMP_FROM_BLOCK } from '../apollo/queries'
 import { Text } from 'rebass'
 import _Decimal from 'decimal.js-light'
 import toFormat from 'toformat'
@@ -480,4 +480,25 @@ export function isEquivalent(a, b) {
     }
   }
   return true
+}
+
+export async function getGraphDate() {
+  let last_block_in_graph = await client.query({
+    query: GET_META_BLOCK,
+    fetchPolicy: 'cache-first',
+  })
+
+  let block_number = last_block_in_graph?.data?._meta?.syncBlock?.toString()
+
+  let last_date_in_graph = (
+    await blockClient.query({
+      query: GET_TIMESTAMP_FROM_BLOCK,
+      variables: {
+        block: block_number,
+      },
+      fetchPolicy: 'cache-first',
+    })
+  )?.data?.blocks[0]?.timestamp
+
+  return parseInt(last_date_in_graph) * 1000
 }

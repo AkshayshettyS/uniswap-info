@@ -301,8 +301,8 @@ function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBl
 
   if (
     TRACKED_OVERRIDES_PAIRS.includes(pairAddress) ||
-    TRACKED_OVERRIDES_TOKENS.includes(data.token0.id) ||
-    TRACKED_OVERRIDES_TOKENS.includes(data.token1.id)
+    TRACKED_OVERRIDES_TOKENS.includes(data?.token0?.id) ||
+    TRACKED_OVERRIDES_TOKENS.includes(data?.token1?.id)
   ) {
     data.oneDayVolumeUSD = oneDayVolumeUntracked
     data.oneWeekVolumeUSD = oneWeekVolumeUntracked
@@ -318,6 +318,7 @@ function parseData(data, oneDayData, twoDayData, oneWeekData, ethPrice, oneDayBl
 
 const getPairTransactions = async (pairAddress) => {
   const transactions = {}
+  // console.log('query: ', FILTERED_TRANSACTIONS)
 
   try {
     let result = await client.query({
@@ -615,6 +616,7 @@ export function usePairTransactions(pairAddress) {
     async function checkForTxns() {
       if (!pairTxns) {
         let transactions = await getPairTransactions(pairAddress)
+        console.log(transactions)
         updatePairTxns(pairAddress, transactions)
       }
     }
